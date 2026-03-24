@@ -1,14 +1,19 @@
 import { useState } from "react";
 import { buildEvidenceBundle } from "../lib/evidence";
 import { countByStatus } from "../lib/workflow";
-import type { Scenario, WorkflowRun } from "../types/workflow";
+import type { IntegrationStatus, Scenario, WorkflowRun } from "../types/workflow";
 
 type ControlPlanePanelProps = {
   scenario: Scenario;
   run: WorkflowRun | null;
+  integrationStatus: IntegrationStatus | null;
 };
 
-export function ControlPlanePanel({ scenario, run }: ControlPlanePanelProps) {
+export function ControlPlanePanel({
+  scenario,
+  run,
+  integrationStatus,
+}: ControlPlanePanelProps) {
   const [copied, setCopied] = useState(false);
   const counts = countByStatus(run);
   const evidenceBundle = buildEvidenceBundle(scenario, run);
@@ -82,6 +87,40 @@ export function ControlPlanePanel({ scenario, run }: ControlPlanePanelProps) {
               {counts.awaiting > 0 ? "waiting" : "clear"}
             </span>
           </div>
+        </div>
+      </div>
+      <div className="stack-card">
+        <h3>Integration readiness</h3>
+        <p>These are the real server-side keys still missing before live Token Vault and Prysm calls.</p>
+        <div className="scope-list">
+          <div className="scope-row">
+            <span>Auth0</span>
+            <span className="scope-state">
+              {integrationStatus?.auth0.configured ? "configured" : "stubbed"}
+            </span>
+          </div>
+          {!integrationStatus?.auth0.configured
+            ? integrationStatus?.auth0.missing.map((item) => (
+                <div key={item} className="scope-row scope-missing">
+                  <span>{item}</span>
+                  <span className="scope-state scope-warning">missing</span>
+                </div>
+              ))
+            : null}
+          <div className="scope-row">
+            <span>Prysm</span>
+            <span className="scope-state">
+              {integrationStatus?.prysm.configured ? "configured" : "stubbed"}
+            </span>
+          </div>
+          {!integrationStatus?.prysm.configured
+            ? integrationStatus?.prysm.missing.map((item) => (
+                <div key={item} className="scope-row scope-missing">
+                  <span>{item}</span>
+                  <span className="scope-state scope-warning">missing</span>
+                </div>
+              ))
+            : null}
         </div>
       </div>
       <div className="stack-card">

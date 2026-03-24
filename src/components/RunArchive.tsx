@@ -2,7 +2,7 @@ import type { WorkflowRun } from "../types/workflow";
 
 type RunArchiveProps = {
   history: WorkflowRun[];
-  onRestore: (run: WorkflowRun) => void;
+  onRestore: (run: WorkflowRun) => void | Promise<void>;
 };
 
 export function RunArchive({ history, onRestore }: RunArchiveProps) {

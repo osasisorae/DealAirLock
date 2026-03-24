@@ -6,15 +6,25 @@ import { RunArchive } from "./components/RunArchive";
 import { RunTimeline } from "./components/RunTimeline";
 import { ScenarioRail } from "./components/ScenarioRail";
 import { scenarios } from "./data/scenarios";
-import { approveRun, clearActiveRun, loadActiveRun, loadRunHistory, rejectRun, startScenarioRun } from "./lib/local-api";
+import {
+  approveRun,
+  clearActiveRun,
+  loadActiveRun,
+  loadIntegrationStatus,
+  loadRunHistory,
+  rejectRun,
+  restoreRun,
+  startScenarioRun,
+} from "./lib/local-api";
 import { getAwaitingAction, isRunTerminal } from "./lib/workflow";
-import type { WorkflowRun } from "./types/workflow";
+import type { IntegrationStatus, WorkflowRun } from "./types/workflow";
 
 export default function App() {
   const [selectedScenarioId, setSelectedScenarioId] = useState(scenarios[0].id);
   const [run, setRun] = useState<WorkflowRun | null>(null);
   const [history, setHistory] = useState<WorkflowRun[]>([]);
   const [saving, setSaving] = useState(false);
+  const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatus | null>(null);
 
   const selectedScenario = useMemo(
     () => scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? scenarios[0],
@@ -24,12 +34,17 @@ export default function App() {
 
   useEffect(() => {
     void (async () => {
-      const [active, storedHistory] = await Promise.all([loadActiveRun(), loadRunHistory()]);
+      const [active, storedHistory, status] = await Promise.all([
+        loadActiveRun(),
+        loadRunHistory(),
+        loadIntegrationStatus(),
+      ]);
       if (active) {
         setRun(active);
         setSelectedScenarioId(active.scenarioId);
       }
       setHistory(storedHistory);
+      setIntegrationStatus(status);
     })();
   }, []);
 
@@ -127,9 +142,11 @@ export default function App() {
           <RunTimeline run={run} />
           <RunArchive
             history={history}
-            onRestore={(storedRun) => {
-              setRun(storedRun);
-              setSelectedScenarioId(storedRun.scenarioId);
+            onRestore={async (storedRun) => {
+              const restored = await restoreRun(storedRun.sessionId);
+              setRun(restored);
+              setSelectedScenarioId(restored.scenarioId);
+              await refreshHistory();
             }}
           />
         </div>
@@ -140,7 +157,11 @@ export default function App() {
             onApprove={handleApprove}
             onReject={handleReject}
           />
-          <ControlPlanePanel scenario={selectedScenario} run={run} />
+          <ControlPlanePanel
+            scenario={selectedScenario}
+            run={run}
+            integrationStatus={integrationStatus}
+          />
           <IntegrationInspector
             scenario={selectedScenario}
             run={run}

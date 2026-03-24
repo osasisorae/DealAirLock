@@ -49,3 +49,14 @@ export type WorkflowRun = {
   connectors: string[];
   actions: RunAction[];
 };
+
+export type IntegrationStatus = {
+  auth0: {
+    configured: boolean;
+    missing: string[];
+  };
+  prysm: {
+    configured: boolean;
+    missing: string[];
+  };
+};

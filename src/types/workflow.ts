@@ -42,6 +42,7 @@ export type WorkflowRun = {
   sessionId: string;
   scenarioId: string;
   startedAt: string;
+  updatedAt: string;
   agent: string;
   policyPack: string;
   auth0Scopes: string[];

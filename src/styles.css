@@ -417,6 +417,30 @@ button {
   gap: 12px;
 }
 
+.archive-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.archive-item {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid rgba(158, 178, 214, 0.12);
+  background: rgba(14, 23, 43, 0.7);
+  border-radius: 16px;
+  padding: 14px;
+  color: #dfe8f7;
+  cursor: pointer;
+}
+
+.archive-item span,
+.archive-empty {
+  color: #9eb2d6;
+}
+
 @media (max-width: 1180px) {
   .layout {
     grid-template-columns: 1fr;

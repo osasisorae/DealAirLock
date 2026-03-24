@@ -22,6 +22,7 @@ This first slice focuses on a FutureX-style SPV workflow:
 - approval gates for sensitive actions
 - visible Auth0 scopes and connectors
 - visible Prysm governance session, decisions, and evidence bundle
+- local evidence persistence so a run can be resumed or reviewed after refresh
 
 ## Planned real integrations
 

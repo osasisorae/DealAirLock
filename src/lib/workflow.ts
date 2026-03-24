@@ -51,11 +51,13 @@ function advanceUntilGate(actions: RunAction[]): RunAction[] {
 }
 
 export function createRun(scenario: Scenario): WorkflowRun {
+  const now = new Date().toISOString();
   return {
     id: `run_${scenario.id}`,
     sessionId: `sess_${scenario.id}_${Date.now().toString(36)}`,
     scenarioId: scenario.id,
-    startedAt: new Date().toISOString(),
+    startedAt: now,
+    updatedAt: now,
     agent: scenario.agent,
     policyPack: scenario.policyPack,
     auth0Scopes: scenario.auth0Scopes,
@@ -73,6 +75,7 @@ export function approveCurrentAction(run: WorkflowRun): WorkflowRun {
 
   return {
     ...run,
+    updatedAt: new Date().toISOString(),
     actions: advanceUntilGate(nextActions),
   };
 }
@@ -97,6 +100,7 @@ export function rejectCurrentAction(run: WorkflowRun): WorkflowRun {
 
   return {
     ...run,
+    updatedAt: new Date().toISOString(),
     actions: nextActions,
   };
 }
@@ -129,5 +133,11 @@ export function countByStatus(run: WorkflowRun | null) {
       blocked: 0,
       queued: 0,
     },
+  );
+}
+
+export function isRunTerminal(run: WorkflowRun) {
+  return run.actions.every(
+    (action) => action.status === "completed" || action.status === "blocked",
   );
 }

@@ -392,6 +392,12 @@ button {
   border: 1px solid rgba(157, 177, 214, 0.18);
 }
 
+.warning-pill {
+  background: rgba(237, 173, 67, 0.14);
+  color: #ffd37e;
+  border: 1px solid rgba(237, 173, 67, 0.24);
+}
+
 .code-block {
   margin: 12px 0 0;
   padding: 14px;
@@ -403,6 +409,12 @@ button {
   color: #a6ffd1;
   font-size: 0.8rem;
   line-height: 1.5;
+}
+
+.payload-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 @media (max-width: 1180px) {

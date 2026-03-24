@@ -49,6 +49,7 @@ export const scenarios: Scenario[] = [
         evidence: ["email draft", "DocuSign envelope preview", "recipient list"],
         risk: "high",
         requiresApproval: true,
+        requiresStepUp: true,
       },
       {
         id: "log-onboarding",
@@ -104,6 +105,7 @@ export const scenarios: Scenario[] = [
         evidence: ["final recipients", "final approved copy"],
         risk: "high",
         requiresApproval: true,
+        requiresStepUp: true,
       },
     ],
   },
@@ -149,6 +151,7 @@ export const scenarios: Scenario[] = [
         evidence: ["ballot preview", "shareholder list", "approval receipt"],
         risk: "high",
         requiresApproval: true,
+        requiresStepUp: true,
       },
     ],
   },

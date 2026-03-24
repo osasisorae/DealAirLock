@@ -15,6 +15,7 @@ export type WorkflowAction = {
   evidence: string[];
   risk: RiskLevel;
   requiresApproval?: boolean;
+  requiresStepUp?: boolean;
 };
 
 export type Scenario = {

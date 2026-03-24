@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ApprovalPanel } from "./components/ApprovalPanel";
 import { ControlPlanePanel } from "./components/ControlPlanePanel";
+import { IntegrationInspector } from "./components/IntegrationInspector";
 import { RunTimeline } from "./components/RunTimeline";
 import { ScenarioRail } from "./components/ScenarioRail";
 import { scenarios } from "./data/scenarios";
@@ -73,6 +74,11 @@ export default function App() {
             onReject={() => run && setRun(rejectCurrentAction(run))}
           />
           <ControlPlanePanel scenario={selectedScenario} run={run} />
+          <IntegrationInspector
+            scenario={selectedScenario}
+            run={run}
+            awaitingAction={awaitingAction}
+          />
         </div>
       </main>
     </div>

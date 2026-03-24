@@ -37,6 +37,9 @@ export function ApprovalPanel({
                   {scope}
                 </span>
               ))}
+              {awaitingAction.requiresStepUp ? (
+                <span className="ghost-pill warning-pill">step-up auth required</span>
+              ) : null}
             </div>
           </div>
           <div className="approval-actions">

@@ -70,6 +70,9 @@ export function RunTimeline({ run }: { run: WorkflowRun | null }) {
                     {item}
                   </span>
                 ))}
+                {action.requiresStepUp ? (
+                  <span className="ghost-pill warning-pill">step-up</span>
+                ) : null}
                 {action.decision ? (
                   <span className="ghost-pill decision-pill">Decision: {action.decision}</span>
                 ) : null}

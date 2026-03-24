@@ -158,6 +158,10 @@ button {
   padding: 13px 18px;
   border: 0;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .primary-button {
@@ -176,10 +180,62 @@ button {
   font-size: 0.82rem;
 }
 
+.disabled-link {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.step-card {
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(17, 28, 50, 0.55);
+  border: 1px solid rgba(158, 178, 214, 0.12);
+}
+
+.step-card strong {
+  display: block;
+  margin-top: 12px;
+}
+
+.step-card p {
+  margin: 8px 0 0;
+  color: #aebfdd;
+  line-height: 1.5;
+  font-size: 0.92rem;
+}
+
+.step-card.active {
+  border-color: rgba(237, 173, 67, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(237, 173, 67, 0.2);
+}
+
+.step-card.done {
+  border-color: rgba(77, 214, 149, 0.35);
+}
+
+.step-index {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(157, 177, 214, 0.16);
+  color: #dfe8f7;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 .stat-card,
@@ -350,6 +406,12 @@ button {
   margin-top: 14px;
 }
 
+.approval-error {
+  margin-top: 12px;
+  color: #ffb8ab;
+  line-height: 1.5;
+}
+
 .empty-state,
 .empty-approval {
   min-height: 240px;
@@ -445,6 +507,76 @@ button {
   color: #9eb2d6;
 }
 
+.auth-panel .approval-actions {
+  margin-top: 18px;
+}
+
+.auth-link {
+  min-width: 140px;
+}
+
+.auth-user {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.auth-user img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.auth-user p {
+  margin: 4px 0 0;
+  color: #9eb2d6;
+}
+
+.warning-copy {
+  color: #ffd37e;
+  line-height: 1.6;
+}
+
+.technical-note {
+  margin-top: 14px;
+}
+
+.execution-grid {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(158, 178, 214, 0.12);
+}
+
+.technical-note summary,
+.technical-summary {
+  cursor: pointer;
+  color: #8ba7cf;
+  font-weight: 600;
+}
+
+.technical-panel {
+  padding-top: 16px;
+}
+
+.technical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.inline-code-block {
+  margin: 10px 0 0;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(4, 9, 18, 0.82);
+  color: #ffc3b7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 @media (max-width: 1180px) {
   .layout {
     grid-template-columns: 1fr;
@@ -458,6 +590,10 @@ button {
   .hero-callout {
     justify-content: flex-start;
   }
+
+  .steps-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 760px) {
@@ -470,6 +606,10 @@ button {
   .approval-actions {
     grid-template-columns: 1fr;
     flex-direction: column;
+  }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
   }
 
   .timeline-item {

@@ -77,6 +77,30 @@ export function RunTimeline({ run }: { run: WorkflowRun | null }) {
                   <span className="ghost-pill decision-pill">Decision: {action.decision}</span>
                 ) : null}
               </div>
+              {action.execution ? (
+                <div className="detail-grid execution-grid">
+                  <div>
+                    <span className="detail-label">Execution</span>
+                    <span>{action.execution.summary}</span>
+                  </div>
+                  <div>
+                    <span className="detail-label">Executed at</span>
+                    <span>{new Date(action.execution.executedAt).toLocaleString()}</span>
+                  </div>
+                  {action.execution.recipient ? (
+                    <div>
+                      <span className="detail-label">Recipient</span>
+                      <span>{action.execution.recipient}</span>
+                    </div>
+                  ) : null}
+                  {action.execution.externalId ? (
+                    <div>
+                      <span className="detail-label">Provider ID</span>
+                      <span>{action.execution.externalId}</span>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </li>
         ))}

@@ -44,7 +44,7 @@ export const scenarios: Scenario[] = [
         title: "Send subscription packet",
         description: "Email the packet and DocuSign envelope to the investor.",
         connector: "Gmail + DocuSign",
-        auth0Scopes: ["gmail.read", "docusign.write"],
+        auth0Scopes: ["gmail.send", "docusign.write"],
         prysmChecks: ["external action approval", "recipient boundary", "audit trail"],
         evidence: ["email draft", "DocuSign envelope preview", "recipient list"],
         risk: "high",

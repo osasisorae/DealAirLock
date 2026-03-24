@@ -1,22 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
 import { ApprovalPanel } from "./components/ApprovalPanel";
+import { AuthPanel } from "./components/AuthPanel";
+import { ConnectedAccountPanel } from "./components/ConnectedAccountPanel";
 import { ControlPlanePanel } from "./components/ControlPlanePanel";
 import { IntegrationInspector } from "./components/IntegrationInspector";
 import { RunArchive } from "./components/RunArchive";
 import { RunTimeline } from "./components/RunTimeline";
 import { ScenarioRail } from "./components/ScenarioRail";
+import { WorkflowSteps } from "./components/WorkflowSteps";
 import { scenarios } from "./data/scenarios";
 import {
   approveRun,
   clearActiveRun,
   loadActiveRun,
+  loadAuthStatus,
   loadIntegrationStatus,
   loadRunHistory,
+  loadTokenVaultStatus,
   rejectRun,
   restoreRun,
   startScenarioRun,
 } from "./lib/local-api";
 import { getAwaitingAction, isRunTerminal } from "./lib/workflow";
+import type { AuthStatus } from "./types/auth";
+import type { TokenVaultStatus } from "./types/token-vault";
 import type { IntegrationStatus, WorkflowRun } from "./types/workflow";
 
 export default function App() {
@@ -25,6 +32,9 @@ export default function App() {
   const [history, setHistory] = useState<WorkflowRun[]>([]);
   const [saving, setSaving] = useState(false);
   const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatus | null>(null);
+  const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
+  const [tokenVaultStatus, setTokenVaultStatus] = useState<TokenVaultStatus | null>(null);
+  const [operationError, setOperationError] = useState<string | null>(null);
 
   const selectedScenario = useMemo(
     () => scenarios.find((scenario) => scenario.id === selectedScenarioId) ?? scenarios[0],
@@ -39,12 +49,15 @@ export default function App() {
         loadRunHistory(),
         loadIntegrationStatus(),
       ]);
+      const [auth, tokenVault] = await Promise.all([loadAuthStatus(), loadTokenVaultStatus()]);
       if (active) {
         setRun(active);
         setSelectedScenarioId(active.scenarioId);
       }
       setHistory(storedHistory);
       setIntegrationStatus(status);
+      setAuthStatus(auth);
+      setTokenVaultStatus(tokenVault);
     })();
   }, []);
 
@@ -54,6 +67,7 @@ export default function App() {
 
   async function handleStart() {
     setSaving(true);
+    setOperationError(null);
     try {
       const next = await startScenarioRun(selectedScenario);
       setRun(next);
@@ -66,10 +80,13 @@ export default function App() {
   async function handleApprove() {
     if (!run) return;
     setSaving(true);
+    setOperationError(null);
     try {
       const next = await approveRun(run);
       setRun(next);
       await refreshHistory();
+    } catch (error) {
+      setOperationError(error instanceof Error ? error.message : "Unable to approve action.");
     } finally {
       setSaving(false);
     }
@@ -78,6 +95,7 @@ export default function App() {
   async function handleReject() {
     if (!run) return;
     setSaving(true);
+    setOperationError(null);
     try {
       const next = await rejectRun(run);
       setRun(next);
@@ -88,6 +106,7 @@ export default function App() {
   }
 
   async function handleReset() {
+    setOperationError(null);
     await clearActiveRun();
     setRun(null);
     await refreshHistory();
@@ -121,6 +140,12 @@ export default function App() {
           onStart={handleStart}
         />
         <div className="main-column">
+          <WorkflowSteps
+            signedIn={Boolean(authStatus?.isAuthenticated)}
+            googleConnected={Boolean(tokenVaultStatus?.googleConnected)}
+            hasRun={Boolean(run)}
+            awaitingApproval={Boolean(awaitingAction)}
+          />
           <section className="panel scenario-summary">
             <div className="panel-header">
               <div>
@@ -151,49 +176,60 @@ export default function App() {
           />
         </div>
         <div className="side-column">
+          <AuthPanel auth={authStatus} />
+          <ConnectedAccountPanel status={tokenVaultStatus} />
           <ApprovalPanel
             scenario={selectedScenario}
             awaitingAction={awaitingAction}
             onApprove={handleApprove}
             onReject={handleReject}
+            error={operationError}
           />
           <ControlPlanePanel
             scenario={selectedScenario}
             run={run}
             integrationStatus={integrationStatus}
           />
-          <IntegrationInspector
-            scenario={selectedScenario}
-            run={run}
-            awaitingAction={awaitingAction}
-          />
-          <section className="panel state-panel">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">Run State</p>
-                <h2>Local API status</h2>
-              </div>
+          <details className="panel technical-panel">
+            <summary className="technical-summary">Technical details</summary>
+            <div className="technical-stack">
+              <section className="stack-card state-card">
+                <div className="inline-header">
+                  <h3>Local API status</h3>
+                  <button className="secondary-button small-button" onClick={handleReset} type="button">
+                    Clear active run
+                  </button>
+                </div>
+                <div className="scope-list">
+                  <div className="scope-row">
+                    <span>Persistence</span>
+                    <span className="scope-state">server file store</span>
+                  </div>
+                  <div className="scope-row">
+                    <span>Save state</span>
+                    <span className="scope-state">{saving ? "saving" : "idle"}</span>
+                  </div>
+                  <div className="scope-row">
+                    <span>Run terminal</span>
+                    <span className="scope-state">
+                      {run && isRunTerminal(run) ? "yes" : "no"}
+                    </span>
+                  </div>
+                  <div className="scope-row">
+                    <span>Auth session</span>
+                    <span className="scope-state">
+                      {authStatus?.isAuthenticated ? "active" : "missing"}
+                    </span>
+                  </div>
+                </div>
+              </section>
+              <IntegrationInspector
+                scenario={selectedScenario}
+                run={run}
+                awaitingAction={awaitingAction}
+              />
             </div>
-            <div className="scope-list">
-              <div className="scope-row">
-                <span>Persistence</span>
-                <span className="scope-state">local storage</span>
-              </div>
-              <div className="scope-row">
-                <span>Save state</span>
-                <span className="scope-state">{saving ? "saving" : "idle"}</span>
-              </div>
-              <div className="scope-row">
-                <span>Run terminal</span>
-                <span className="scope-state">
-                  {run && isRunTerminal(run) ? "yes" : "no"}
-                </span>
-              </div>
-            </div>
-            <button className="secondary-button small-button" onClick={handleReset} type="button">
-              Clear active run
-            </button>
-          </section>
+          </details>
         </div>
       </main>
     </div>

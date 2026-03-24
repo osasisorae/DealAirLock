@@ -1,3 +1,5 @@
+import type { AuthStatus } from "../types/auth";
+import type { TokenVaultStatus } from "../types/token-vault";
 import type { IntegrationStatus, Scenario, WorkflowRun } from "../types/workflow";
 
 async function readJson<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
@@ -5,7 +7,14 @@ async function readJson<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(message || `Request failed: ${response.status}`);
+    let parsedMessage: string | null = null;
+    try {
+      const parsed = JSON.parse(message) as { error?: string; message?: string };
+      parsedMessage = parsed.error ?? parsed.message ?? null;
+    } catch {
+      // Keep raw text fallback below.
+    }
+    throw new Error(parsedMessage ?? message ?? `Request failed: ${response.status}`);
   }
 
   if (response.status === 204) {
@@ -27,6 +36,14 @@ export async function loadRunHistory() {
 
 export async function loadIntegrationStatus() {
   return readJson<IntegrationStatus>("/api/integrations/status");
+}
+
+export async function loadAuthStatus() {
+  return readJson<AuthStatus>("/api/auth/status");
+}
+
+export async function loadTokenVaultStatus() {
+  return readJson<TokenVaultStatus>("/api/token-vault/status");
 }
 
 export async function startScenarioRun(scenario: Scenario) {

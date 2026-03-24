@@ -44,6 +44,7 @@ export function buildEvidenceBundle(scenario: Scenario, run: WorkflowRun | null)
       prysmChecks: action.prysmChecks,
       evidence: action.evidence,
       decision: action.decision ?? null,
+      execution: action.execution ?? null,
     })),
   };
 }

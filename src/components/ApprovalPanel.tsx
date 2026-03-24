@@ -5,6 +5,7 @@ type ApprovalPanelProps = {
   awaitingAction: RunAction | null;
   onApprove: () => void;
   onReject: () => void;
+  error?: string | null;
 };
 
 export function ApprovalPanel({
@@ -12,6 +13,7 @@ export function ApprovalPanel({
   awaitingAction,
   onApprove,
   onReject,
+  error,
 }: ApprovalPanelProps) {
   return (
     <section className="panel approval-panel">
@@ -50,6 +52,7 @@ export function ApprovalPanel({
               Approve and continue
             </button>
           </div>
+          {error ? <p className="approval-error">{error}</p> : null}
         </>
       ) : (
         <div className="empty-approval">

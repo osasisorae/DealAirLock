@@ -18,6 +18,15 @@ export type WorkflowAction = {
   requiresStepUp?: boolean;
 };
 
+export type ActionExecution = {
+  connector: string;
+  executedAt: string;
+  summary: string;
+  status: "executed" | "failed" | "skipped";
+  recipient?: string;
+  externalId?: string;
+};
+
 export type Scenario = {
   id: string;
   name: string;
@@ -35,6 +44,7 @@ export type Scenario = {
 export type RunAction = WorkflowAction & {
   status: ActionStatus;
   decision?: "approved" | "rejected";
+  execution?: ActionExecution;
 };
 
 export type WorkflowRun = {

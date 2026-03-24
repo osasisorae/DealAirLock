@@ -1,4 +1,4 @@
-import type { RunAction, Scenario, WorkflowRun } from "../types/workflow";
+import type { ActionExecution, RunAction, Scenario, WorkflowRun } from "../types/workflow";
 
 function buildQueuedActions(actions: Scenario["actions"]): RunAction[] {
   const next: RunAction[] = [];
@@ -66,10 +66,19 @@ export function createRun(scenario: Scenario): WorkflowRun {
   };
 }
 
-export function approveCurrentAction(run: WorkflowRun): WorkflowRun {
+export function approveCurrentAction(
+  run: WorkflowRun,
+  execution?: { actionId: string; details: ActionExecution },
+): WorkflowRun {
   const nextActions = run.actions.map((action) =>
     action.status === "awaiting_approval"
-      ? { ...action, status: "completed" as const, decision: "approved" as const }
+      ? {
+          ...action,
+          status: "completed" as const,
+          decision: "approved" as const,
+          execution:
+            execution && execution.actionId === action.id ? execution.details : action.execution,
+        }
       : action,
   );
 
